@@ -104,7 +104,7 @@ document.addEventListener("DOMContentLoaded", function() {
         let tbl = document.getElementById('invoice-tbl');
 
         let trElement = document.createElement('tr');
-        $(trElement).html('<td>'+name+'</td><td>'+address+'</td><td><a onclick=\'renderDetails("'+id+'")\'>'+invoiceNumber+'</a></td><td><button onclick=\'deleteEntry("'+id+'")\'>Delete</button><button onclick=\'editEntry("'+id+'")\'>Edit</button></td>');
+        $(trElement).html('<td>'+name+'</td><td>'+address+'</td><td><a href=\'javascript:renderDetails("'+id+'")\'>'+invoiceNumber+'</a></td><td><button onclick=\'deleteEntry("'+id+'")\'>Delete</button><button onclick=\'editEntry("'+id+'")\'>Update</button></td>');
 
         tbl.appendChild(trElement);
     }
