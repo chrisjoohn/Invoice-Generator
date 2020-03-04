@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Welcome to Firebase Hosting</title>
+
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/7.9.3/firebase-app.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script defer src="/__/firebase/7.9.3/firebase-auth.js"></script>
+    <script defer src="/__/firebase/7.9.3/firebase-database.js"></script>
+    <script defer src="/__/firebase/7.9.3/firebase-messaging.js"></script>
+    <script defer src="/__/firebase/7.9.3/firebase-storage.js"></script>
+    <script defer src="/__/firebase/7.9.3/firebase-firestore.js"></script>
+    <!-- initialize the SDK after all desired features are loaded -->
+    <script defer src="/__/firebase/init.js"></script>
+    <script src="./scripts.js" ></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+
+
+    <style media="screen">
+      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 20px; }
+      table, td, th{
+        border: 1px solid black;
+      }
+
+      table{
+        border-collapse: collapse;
+        width: 100%;
+      }
+      
+      th{
+        text-align: left;
+      }
+      
+    </style>
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li>
+          <button onclick="show('invoices')">Invoices</button>
+        </li>
+        <li>
+          <button onclick="show('create')">Create</button>
+        </li>
+      </ul>
+    </nav>
+    <div id="content-wrapper">
+      <div id="invoice-holder">
+        <h2>Records</h2>
+        <table id="invoice-tbl">
+          <tr>
+            <th>
+              Client name
+            </th>
+            <th>
+              Address
+            </th>
+            <th>
+              Invoice number
+            </th>
+          </tr>
+        </table>
+      </div>
+      <div id="invoice-details" hidden>
+        <h1>INVOICE</h1>
+        <br>
+        <label>Invoice number: <h2 id="invoice-field"></h2></label>
+        <br />
+        <label>Name: <h2 id="name-field"></h2></label>
+        <br />
+        <label>Address: <h2 id="address-field"></h2> </label>
+        <h1>Orders</h1>
+        <table id="order-table">
+        </table>
+        <h3>Total : <span id="total"></span></h3> 
+      </div>
+    </div>
+    <div id="create-invoice" hidden >
+      <h2>Create</h2>
+      <div id="create-form-holder">
+        <input type="text" placeholder="Name" id="name"/>
+        <input type="text" placeholder="Address" id="address"/>
+        <br />
+        <br />
+        <table id="invoice-items-holder">
+          <tr>
+            <th>
+              Description
+            </th>
+            <th>
+              Unit cost
+            </th>
+            <th>
+              Quantity
+            </th>
+            <th>
+              Amount
+            </th>
+          </tr>
+        </table>
+        <button type="button" onclick="addRow()">Add Item</button>
+        <button type="button" onclick="submitOrder()" id="submitBtn">Submit order</button>
+      </div>
+    </div>
+    <div id="update-invoice" hidden >
+      <h2>UPDATE</h2>
+      <div id="create-form-holder">
+        <input type="text" placeholder="Name" id="nameUpdate"/>
+        <input type="text" placeholder="Address" id="addressUpdate"/>
+        <br />
+        <br />
+        <table id="invoice-items-update">
+          <tr>
+            <th>
+              Description
+            </th>
+            <th>
+              Unit cost
+            </th>
+            <th>
+              Quantity
+            </th>
+            <th>
+              Amount
+            </th>
+          </tr>
+        </table>
+        <button type="button" onclick="addRowUpdate()">Add Item</button>
+        <button type="button" onclick="updateInvoice()" id="updateButton">Update</button>
+      </div>
+    </div>
+  </body>
+</html>
