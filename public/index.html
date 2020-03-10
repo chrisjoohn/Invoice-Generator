@@ -15,13 +15,14 @@
     <script defer src="/__/firebase/7.9.3/firebase-firestore.js"></script>
     <!-- initialize the SDK after all desired features are loaded -->
     <script defer src="/__/firebase/init.js"></script>
-    <script src="./scripts.js" ></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
 
     <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 20px; }
+      /* body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 20px; }
       table, td, th{
         border: 1px solid black;
       }
@@ -34,59 +35,69 @@
       th{
         text-align: left;
       }
-      
+       */
     </style>
   </head>
   <body>
-    <nav>
-      <ul>
-        <li>
-          <a href="javascript:show('invoices')">Invoices</a>
-        </li>
-        <li>
-          <a href="javascript:show('create')">Create</a>
-        </li>
-      </ul>
+    <nav class="navbar navbar-inverse">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">Invoice Generator</a>
+        </div>
+        <ul class="nav navbar-nav">
+          <li><a href="javascript:show('invoices')">Home</a></li>
+          <li><a href="javascript:show('create')">Create</a></li>
+        </ul>
+      </div>
     </nav>
-    <div id="content-wrapper">
+    <div style="padding:20px" id="content-wrapper">
       <div id="invoice-holder">
         <h2>Records</h2>
-        <table id="invoice-tbl">
-          <tr>
-            <th>
-              Client name
-            </th>
-            <th>
-              Address
-            </th>
-            <th>
-              Invoice number
-            </th>
-          </tr>
+
+        <div id="loadingContent" hidden>
+          <center><h1>Loading...</h1></center>
+        </div>
+        <div id="search" hidden>
+          <input onkeyup='FilterData()' type="text" id="search_input" placeholder="Search here..."/>
+        </div>
+        <br>
+        <table class="table" id="invoice-tbl">
+
         </table>
       </div>
+        <div id="loadingContentDetails" hidden>
+          <center><h1>Loading...</h1></center>
+        </div>
       <div id="invoice-details" hidden>
         <h1>INVOICE</h1>
         <br>
-        <label>Invoice number: <h2 id="invoice-field"></h2></label>
-        <br />
-        <label>Name: <h2 id="name-field"></h2></label>
-        <br />
-        <label>Address: <h2 id="address-field"></h2> </label>
-        <h1>Orders</h1>
-        <table id="order-table">
+        <div class="row">
+          <div class="col-sm-6">
+            <label for="name-field">Name: </label>
+            <span id="name-field"></span>
+            <br />
+            <label for="address-field">Address:</label>
+            <span id="address-field"></span>
+          </div>
+          <div class="col-sm-6">
+            <label>Invoice number: <span id="invoice-field"></span></label>
+          </div>
+          <br />
+        </div>
+        <h3>Orders</h3>
+        <table class="table" id="order-table">
         </table>
         <h3>Total : <span id="total"></span></h3> 
       </div>
     </div>
-    <div id="create-invoice" hidden >
+    <div style="padding:20px" id="create-invoice" hidden >
       <h2>Create</h2>
       <div id="create-form-holder">
         <input type="text" placeholder="Name" id="name"/>
         <input type="text" placeholder="Address" id="address"/>
         <br />
         <br />
-        <table id="invoice-items-holder">
+        <table class="table" id="invoice-items-holder">
           <tr>
             <th>
               Description
@@ -106,15 +117,18 @@
         <button type="button" onclick="submitOrder()" id="submitBtn">Submit order</button>
       </div>
     </div>
-    <div id="update-invoice" hidden >
+    <div style="padding: 20px;" id="update-invoice" hidden >
+      <div id="loadingContentUpdate" hidden>
+        <center><h1>Loading...</h1></center>
+      </div>
+      <div id="update-form-holder">
       <h2>UPDATE</h2>
-      <div id="create-form-holder">
         <input type="text" placeholder="Name" id="nameUpdate"/>
         <input type="text" placeholder="Address" id="addressUpdate"/>
         <br />
         <br />
         <table id="invoice-items-update">
-          <tr>
+          <!-- <tr>
             <th>
               Description
             </th>
@@ -126,7 +140,7 @@
             </th>
             <th>
               Amount
-            </th>
+            </th> -->
           </tr>
         </table>
         <button type="button" onclick="addRowUpdate()">Add Item</button>
@@ -134,4 +148,6 @@
       </div>
     </div>
   </body>
+
+  <script src="./scripts.js" ></script>
 </html>

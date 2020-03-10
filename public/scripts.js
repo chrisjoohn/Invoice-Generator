@@ -1,12 +1,13 @@
-let nameInput, addressInput, db, getData;
+let nameInput, addressInput, db, getData, searchInput;
 let renderDetails = id => {
-    $('#invoice-holder').hide();
+  $('#loadingContentDetails').show();
+  $('#invoice-holder').hide();
   db.collection("orders")
     .doc(id)
     .get()
     .then( doc => {
+        $('#loadingContentDetails').hide();
         if(doc.exists){
-
             let invoiceDetailsContainer = document.getElementById('invoice-details');
             $(invoiceDetailsContainer).show()
             let name = doc.data().name;
@@ -65,7 +66,7 @@ let populateUpdateTable = (orders) => {
 
     orders.forEach(element => {
         let trElement = document.createElement('tr');
-        $('#invoice-items-update').append($(trElement).html("<td><input value='"+element.item+"' type='text' class='item' /></td><td><input value='"+element.cost+"' class='cost' type='number'/></td><td><input value='"+element.quantity+"' class='quantity' type='number'/></td><td><input value='"+element.amount+"' class='amount' type='number' /></td>"));
+        $('#invoice-items-update').append($(trElement).html("<td><input class='form-control item' value='"+element.item+"' type='text' /></td><td><input onkeyup='calculateTotal(this)' value='"+element.cost+"' class='cost form-control' type='number'/></td><td><input onkeyup='calculateTotal(this)' value='"+element.quantity+"' class='quantity form-control' type='number'/></td><td><input readonly class='form-control amount' value='"+element.amount+"' type='number' /></td>"));
     });
 }
 
@@ -74,10 +75,14 @@ let editEntry = id => {
     let updateBtn = document.getElementById('updateButton');
     updateBtn.setAttribute('onclick', 'updateInvoice("'+id+'")');
     show('update');
+    $('#update-form-holder').hide()
+    $('#loadingContentUpdate').show()
     db.collection("orders")
       .doc(id)
       .get()
       .then( (doc) => {
+          $('#loadingContentUpdate').hide()
+          $('#update-form-holder').show()
           let name = doc.data().name;
           let address = doc.data().address;
           let orders = doc.data().orders;
@@ -91,6 +96,10 @@ let editEntry = id => {
 
       });
 }
+ 
+
+
+
 document.addEventListener("DOMContentLoaded", function() {
     let app = firebase.app();
     db = app.firestore();
@@ -98,22 +107,23 @@ document.addEventListener("DOMContentLoaded", function() {
     nameInput = document.getElementById('name');
     addressInput = document.getElementById('address');
 
-    
 
     let renderTableRow = (invoiceNumber, name, address, id) => {
         let tbl = document.getElementById('invoice-tbl');
 
         let trElement = document.createElement('tr');
-        $(trElement).html('<td>'+name+'</td><td>'+address+'</td><td><a href=\'javascript:renderDetails("'+id+'")\'>'+invoiceNumber+'</a></td><td><button onclick=\'deleteEntry("'+id+'")\'>Delete</button><button onclick=\'editEntry("'+id+'")\'>Update</button></td>');
+        $(trElement).html('<td>'+name+'</td><td>'+address+'</td><td><a href=\'javascript:renderDetails("'+id+'")\'>'+invoiceNumber+'</a></td><td><button class="btn btn-danger" onclick=\'deleteEntry("'+id+'")\'>Delete</button><button class="btn btn-primary" onclick=\'editEntry("'+id+'")\'>Update</button></td>');
 
         tbl.appendChild(trElement);
     }
 
     getData = () => {
-        $('#invoice-tbl').html("loading...");
+        $('#loadingContent').show()
         db.collection("orders")
           .orderBy("invoiceNumber")
           .onSnapshot(snapshot => {
+            $('#loadingContent').hide() ;
+            $('#search').show();
             let tbl = document.getElementById('invoice-tbl');
             tbl.innerHTML = "";
             let thead = document.createElement('tr');
@@ -125,23 +135,48 @@ document.addEventListener("DOMContentLoaded", function() {
                 let address = element.data().address;
                 let orders = element.data().orders;
                 let id = element.id;
-
+                 
                 renderTableRow(invoiceNumber, name, address, id);
             });
-          });
-    }
 
+          });
+
+    }
     getData();
 
+    searchInput = document.getElementById('search_input');
 });
+
+let calculateTotal = (e) => {
+
+    let thisElement = $(e);
+
+    let cost, quantity, amount;
+    let costField = thisElement.closest('tr').find('.cost');
+    let quantityField = thisElement.closest('tr').find('.quantity');
+    let amountField = thisElement.closest('tr').find('.amount');
+
+    cost = $(costField).val();
+    quantity = $(quantityField).val();
+
+    if (!cost){
+        cost = 0;
+    }
+
+    if(!quantity){
+        quantity = 0;
+    }
+
+    amount = cost * quantity;
+    amountField.val(amount);
+
+}
 
 let addRow = () => {
     let tableElement = document.getElementById('invoice-items-holder');
-
     let trElement = document.createElement('tr');
     // $(trElement).html('<td><input  type="text" placeholder="Item Description"/></td> <td><input type="text" placeholder="Unit Cost" /></td> <td><input type="text" placeholder="Quantity"/></td><td><input type="text" placeholder="Amount"/></td><td><button>delete</button></td>');
-
-    $(trElement).html('<td><input class="item" type="text" placeholder="Item Description"/></td> <td><input class="cost" type="number" placeholder="Unit Cost" /></td> <td><input class="quantity" type="number" placeholder="Quantity"/></td><td><input class="amount" type="number" placeholder="Amount"/></td>');
+    $(trElement).html('<td><input class="item form-control" type="text" placeholder="Item Description"/></td> <td><input class="cost form-control" onkeyup="calculateTotal(this)" type="number" placeholder="Unit Cost" /></td> <td><input onkeyup="calculateTotal(this)" class="quantity form-control" type="number" placeholder="Quantity"/></td><td><input class="amount form-control" type="number" placeholder="Amount" readonly/></td>');
     tableElement.appendChild(trElement);
 }
 
@@ -219,16 +254,25 @@ let show = container => {
         $('#invoice-holder').hide();
         $('#invoice-details').hide();
         $('#update-invoice').hide();
+        $('#search').hide();
     }else if (container == 'invoices'){
         $('#invoice-holder').show();
         $('#create-invoice').hide();
         $('#invoice-details').hide();
         $('#update-invoice').hide();
+        $('#search').show();
     }else if(container == 'update'){
         $('#invoice-holder').hide();
         $('#create-invoice').hide();
         $('#invoice-details').hide();
         $('#update-invoice').show();
+        $('#search').hide();
+    }else if(container == 'search'){
+        $('#invoice-holder').hide();
+        $('#create-invoice').hide();
+        $('#invoice-details').hide();
+        $('#update-invoice').hide();
+        $('#search').show();
     }
 }
 
@@ -275,7 +319,7 @@ let updateInvoice = id => {
     $('#updateButton').prop('disabled', true);
     db.collection('orders').doc(id).set({
         name: name,
-        address: address,
+       address: address,
         orders: orderObjects,
         invoiceNumber : new Date().getTime()
     }).then( () => {
@@ -293,8 +337,33 @@ let addRowUpdate = () => {
     let tableElement = document.getElementById('invoice-items-update');
 
     let trElement = document.createElement('tr');
-    // $(trElement).html('<td><input  type="text" placeholder="Item Description"/></td> <td><input type="text" placeholder="Unit Cost" /></td> <td><input type="text" placeholder="Quantity"/></td><td><input type="text" placeholder="Amount"/></td><td><button>delete</button></td>');
+    // $(trElement).html('<td><input  type="text" placeholder="Item Description"/></td> <td><input type="text" placeholder="Unit Cost" /></td> <td><input type="text" placeholder="Quantity"/></td><td><input type="text" placeholder="Amount"/></td><td><button class='button'>delete</button></td>');
 
-    $(trElement).html('<td><input class="item" type="text" placeholder="Item Description"/></td> <td><input class="cost" type="number" placeholder="Unit Cost" /></td> <td><input class="quantity" type="number" placeholder="Quantity"/></td><td><input class="amount" type="number" placeholder="Amount"/></td>');
+    $(trElement).html('<td><input class="item form-control" type="text" placeholder="Item Description"/></td> <td><input onkeyup="calculateTotal(this)" class="cost form-control" type="number" placeholder="Unit Cost" /></td> <td><input onkeyup="calculateTotal(this)" class="quantity form-control" type="number" placeholder="Quantity"/></td><td><input class="amount form-control" type="number" placeholder="Amount" readonly/></td>');
     tableElement.appendChild(trElement);
+}
+
+let FilterData = () => {
+    let input = searchInput.value;
+    let filter = input.toUpperCase();    
+    let tbl = document.getElementById('invoice-tbl');
+    let tr = tbl.getElementsByTagName('tr');
+
+    for(let i=0; i< tr.length; i++){
+        let td = tr[i].getElementsByTagName('td')
+        for(let j=0; j<td.length - 1; j++){
+            let tdElement = td[j];
+            if(tdElement){
+                let textValue =  tdElement.textContent || tdElement.innerText;
+                if(textValue.toUpperCase().indexOf(filter) > -1){
+                    tr[i].style.display = '';
+                    break;
+                }else{
+                    tr[i].style.display = 'none';
+                }
+            }
+        }
+        console.log()
+        // break;
+    }
 }
